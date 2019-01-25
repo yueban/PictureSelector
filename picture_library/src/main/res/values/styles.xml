@@ -26,8 +26,8 @@
     </style>
 
     <style name="AppTheme.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="picture_alert_dialog" parent="android:Theme.Dialog">
