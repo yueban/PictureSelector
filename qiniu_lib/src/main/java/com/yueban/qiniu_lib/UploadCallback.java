@@ -1,5 +1,7 @@
 package com.yueban.qiniu_lib;
 
+import okhttp3.ResponseBody;
+
 /**
  * @author yueban
  * @date 2019/1/25
@@ -8,7 +10,7 @@ package com.yueban.qiniu_lib;
 public interface UploadCallback {
     void onStart();
 
-    void onSuccess();
+    void onSuccess(String result);
 
     void onFailed(Exception e, String message);
 }

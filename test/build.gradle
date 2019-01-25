@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
-    compile project(':picture_library')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':picture_library')
 
 //    implementation 'com.github.yueban.PictureSelector:picture_library:v2.2.8'
 

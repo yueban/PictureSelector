@@ -10,6 +10,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.luck.picture.lib.PictureSelector;
+import com.luck.picture.lib.PictureSelectorUtil;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
@@ -55,12 +56,12 @@ public class WebViewActivity extends AppCompatActivity {
         webView.setWebViewClient(WVClient);
         webView.setWebChromeClient(chromeClient);
 
-        PictureSelector.integrateWithWebView(webView, new PictureSelector.OnJsCallback() {
-            @Override
-            public void onJsCallForMedia() {
-                gotoImageSelect();
-            }
-        }, "JsTest");
+//        PictureSelectorUtil.integrateWithWebView(webView, new PictureSelectorUtil.OnJsCallback() {
+//            @Override
+//            public void onJsCallForMedia() {
+//                gotoImageSelect();
+//            }
+//        }, "JsTest");
 
 
         webView.loadUrl("file:///android_asset/js_test.html");

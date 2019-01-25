@@ -1,17 +1,14 @@
 package com.luck.picture.lib;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.webkit.WebView;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.DoubleUtils;
-import com.luck.picture.lib.tools.JSObject;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -128,23 +125,6 @@ public final class PictureSelector {
         outState.putSerializable(PictureConfig.EXTRA_SELECT_LIST, (Serializable) selectedImages);
     }
 
-    public static void integrateWithWebView(WebView webView, OnJsCallback onJsCallback) {
-        integrateWithWebView(webView, onJsCallback, "mediaSelector");
-    }
-
-    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
-    public static void integrateWithWebView(WebView webView, final OnJsCallback onJsCallback, String operationName) {
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new JSObject(new JSObject.OnJsCallAndroid() {
-            @Override
-            public void chooseMedia() {
-                if (onJsCallback != null) {
-                    onJsCallback.onJsCallForMedia();
-                }
-            }
-        }), operationName);
-    }
-
     /**
      * @param mimeType Select the type of picture you want，all or Picture or Video .
      * @return LocalMedia PictureSelectionModel
@@ -246,10 +226,6 @@ public final class PictureSelector {
     @Nullable
     Fragment getFragment() {
         return mFragment != null ? mFragment.get() : null;
-    }
-
-    public interface OnJsCallback {
-        void onJsCallForMedia();
     }
 
 }

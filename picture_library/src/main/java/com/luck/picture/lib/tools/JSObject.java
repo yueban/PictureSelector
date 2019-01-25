@@ -10,17 +10,16 @@ import android.webkit.JavascriptInterface;
 public class JSObject {
     private OnJsCallAndroid onJsCallAndroid;
 
-
     public JSObject(OnJsCallAndroid onJsCallAndroid) {
         this.onJsCallAndroid = onJsCallAndroid;
     }
 
     @JavascriptInterface
-    public void chooseMedia() {
-        onJsCallAndroid.chooseMedia();
+    public void chooseMedia(String type, String uploadUrl) {
+        onJsCallAndroid.chooseMedia(type, uploadUrl);
     }
 
     public interface OnJsCallAndroid {
-        void chooseMedia();
+        void chooseMedia(String type, String uploadUrl);
     }
 }
