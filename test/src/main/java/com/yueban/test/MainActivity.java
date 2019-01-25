@@ -25,15 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.web_view);
         WebSettings settings = webView.getSettings();
-        settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
-        settings.setSupportMultipleWindows(true);
         settings.setJavaScriptEnabled(true);
-        settings.setSavePassword(false);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
-        settings.setMinimumFontSize(settings.getMinimumFontSize() + 8);
         settings.setAllowFileAccess(true);
-        settings.setTextSize(WebSettings.TextSize.NORMAL);
-        webView.setVerticalScrollbarOverlay(true);
 
         WebViewClient WVClient = new WebViewClient() {
             @Override
@@ -42,10 +36,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         };
-        WebChromeClient chromeClient = new WebChromeClient();
-
         webView.setWebViewClient(WVClient);
-        webView.setWebChromeClient(chromeClient);
+        webView.setWebChromeClient(new WebChromeClient());
 
         PictureSelector.integrateWithWebView(webView, new PictureSelector.OnJsCallback() {
             @Override
@@ -61,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private void gotoImageSelect() {
         PictureSelector.create(MainActivity.this)
                 .openGallery(PictureMimeType.ofAll())// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()
-                .theme(R.style.picture_default_style)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style
+                .theme(R.style.picture_white_style)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style
                 .maxSelectNum(1)// 最大图片选择数量
                 .minSelectNum(1)// 最小选择数量
                 .imageSpanCount(4)// 每行显示个数
