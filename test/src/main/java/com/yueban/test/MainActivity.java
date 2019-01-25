@@ -1,13 +1,11 @@
 package com.yueban.test;
 
 import android.content.Intent;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -26,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.web_view);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+//        settings.setDatabaseEnabled(true);
+        settings.setDomStorageEnabled(true);
+//        settings.setAllowContentAccess(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setAllowFileAccess(true);
 
@@ -34,6 +35,21 @@ public class MainActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+            }
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                super.onReceivedSslError(view, handler, error);
             }
         };
         webView.setWebViewClient(WVClient);
@@ -46,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, "JsTest");
 
-
-        webView.loadUrl("file:///android_asset/js_test.html");
+//        webView.loadUrl("file:///android_asset/js_test.html");
+        webView.loadUrl("http://192.168.99.112:8081?mobilenum=15736782782");
     }
 
     private void gotoImageSelect() {
@@ -104,16 +120,18 @@ public class MainActivity extends AppCompatActivity {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 图片选择结果回调
                     LocalMedia media = PictureSelector.obtainSingleResult(data);
+                    String type = media.getMimeType() == PictureConfig.TYPE_IMAGE ? "img" : "video";
+                    String path = media.getFinalPath();
+                    String content = media.toBase64();
+                    Log.i("type----->", type);
+                    Log.i("path----->", path);
+                    Log.i("content----->", content);
 
-                    // 例如 LocalMedia 里面返回三种path
-                    // 1.media.getPath(); 为原图path
-                    // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
-                    // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
-                    // 如果裁剪并压缩了，已取压缩路径为准，因为是先裁剪后压缩的
-                    Log.i("图片-----》", media.getPath());
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("path", "file://" + media.getPath());
+                        jsonObject.put("type", type);
+                        jsonObject.put("path", path);
+                        jsonObject.put("content", content);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -121,6 +139,15 @@ public class MainActivity extends AppCompatActivity {
                     webView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
                     break;
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
         }
     }
 }

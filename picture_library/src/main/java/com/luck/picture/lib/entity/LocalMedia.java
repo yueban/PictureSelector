@@ -3,6 +3,11 @@ package com.luck.picture.lib.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Base64;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * author：luck
@@ -14,13 +19,24 @@ import android.text.TextUtils;
  */
 
 public class LocalMedia implements Parcelable {
+    public static final Parcelable.Creator<LocalMedia> CREATOR = new Parcelable.Creator<LocalMedia>() {
+        @Override
+        public LocalMedia createFromParcel(Parcel source) {
+            return new LocalMedia(source);
+        }
+
+        @Override
+        public LocalMedia[] newArray(int size) {
+            return new LocalMedia[size];
+        }
+    };
+    public int position;
     private String path;
     private String compressPath;
     private String cutPath;
     private long duration;
     private boolean isChecked;
     private boolean isCut;
-    public int position;
     private int num;
     private int mimeType;
     private String pictureType;
@@ -56,6 +72,22 @@ public class LocalMedia implements Parcelable {
         this.position = position;
         this.num = num;
         this.mimeType = mimeType;
+    }
+
+    protected LocalMedia(Parcel in) {
+        this.path = in.readString();
+        this.compressPath = in.readString();
+        this.cutPath = in.readString();
+        this.duration = in.readLong();
+        this.isChecked = in.readByte() != 0;
+        this.isCut = in.readByte() != 0;
+        this.position = in.readInt();
+        this.num = in.readInt();
+        this.mimeType = in.readInt();
+        this.pictureType = in.readString();
+        this.compressed = in.readByte() != 0;
+        this.width = in.readInt();
+        this.height = in.readInt();
     }
 
     public String getPictureType() {
@@ -100,7 +132,6 @@ public class LocalMedia implements Parcelable {
     public void setDuration(long duration) {
         this.duration = duration;
     }
-
 
     public boolean isChecked() {
         return isChecked;
@@ -166,6 +197,32 @@ public class LocalMedia implements Parcelable {
         this.height = height;
     }
 
+    public String getFinalPath() {
+        if (isCut()) {
+            return getCutPath();
+        } else if (isCompressed()) {
+            return getCompressPath();
+        } else {
+            return getPath();
+        }
+    }
+
+    public String toBase64() {
+        String filePath = getFinalPath();
+        String base64 = "";
+        try {
+            File file = new File(filePath);
+            byte[] buffer = new byte[(int) file.length() + 100];
+            @SuppressWarnings("resource")
+            int length = new FileInputStream(file).read(buffer);
+            base64 = Base64.encodeToString(buffer, 0, length,
+                    Base64.DEFAULT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return base64;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -187,32 +244,4 @@ public class LocalMedia implements Parcelable {
         dest.writeInt(this.width);
         dest.writeInt(this.height);
     }
-
-    protected LocalMedia(Parcel in) {
-        this.path = in.readString();
-        this.compressPath = in.readString();
-        this.cutPath = in.readString();
-        this.duration = in.readLong();
-        this.isChecked = in.readByte() != 0;
-        this.isCut = in.readByte() != 0;
-        this.position = in.readInt();
-        this.num = in.readInt();
-        this.mimeType = in.readInt();
-        this.pictureType = in.readString();
-        this.compressed = in.readByte() != 0;
-        this.width = in.readInt();
-        this.height = in.readInt();
-    }
-
-    public static final Parcelable.Creator<LocalMedia> CREATOR = new Parcelable.Creator<LocalMedia>() {
-        @Override
-        public LocalMedia createFromParcel(Parcel source) {
-            return new LocalMedia(source);
-        }
-
-        @Override
-        public LocalMedia[] newArray(int size) {
-            return new LocalMedia[size];
-        }
-    };
 }
