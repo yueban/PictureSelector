@@ -14,7 +14,7 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.yueban.qiniu_lib.QiniuUploadCallback;
+import com.yueban.qiniu_lib.UploadCallback;
 import com.yueban.qiniu_lib.UploadUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //upload
                     int updateType = PictureMimeType.isPictureType(media.getPictureType()) == PictureConfig.TYPE_IMAGE ? UploadUtil.TYPE_IMG : UploadUtil.TYPE_VIDEO;
-                    UploadUtil.upload(path, updateType, media.getPictureType(), new QiniuUploadCallback() {
+                    UploadUtil.upload(path, updateType, media.getPictureType(), new UploadCallback() {
                         @Override
                         public void onStart() {
                             showLoadingDialog();
@@ -174,43 +174,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
-
-
-                    //                    int updateType = PictureMimeType.isPictureType(media.getPictureType()) == PictureConfig.TYPE_IMAGE ? QiniuUploadConfig.TYPE_IMG : QiniuUploadConfig.TYPE_VIDEO;
-//                    QiniuUploadUtil.Holder.INSTANCE.uploadFile(path, updateType,
-//                            new QiniuUploadCallback() {
-//                                @Override
-//                                public void onStart() {
-//                                    showLoadingDialog();
-//                                }
-//
-//                                @Override
-//                                public void onSuccess() {
-//                                    dismissLoadingDialog();
-//                                    String url = domain + "/" + fileKey;
-//                                    Log.i("url----->", url);
-//
-//                                    JSONObject jsonObject = new JSONObject();
-//                                    try {
-//                                        jsonObject.put("type", type);
-//                                        jsonObject.put("path", path);
-//                                        jsonObject.put("url", url);
-//                                    } catch (JSONException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    mWebView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
-//                                }
-//
-//                                @Override
-//                                public void onFailed(Exception e, String message) {
-//                                    dismissLoadingDialog();
-//                                    if (!TextUtils.isEmpty(message)) {
-//                                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }
-//                            });
-
-
                     break;
             }
         }

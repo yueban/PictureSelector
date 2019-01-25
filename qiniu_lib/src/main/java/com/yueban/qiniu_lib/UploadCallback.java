@@ -5,7 +5,7 @@ package com.yueban.qiniu_lib;
  * @date 2019/1/25
  * @email fbzhh007@gmail.com
  */
-public interface QiniuUploadCallback {
+public interface UploadCallback {
     void onStart();
 
     void onSuccess();

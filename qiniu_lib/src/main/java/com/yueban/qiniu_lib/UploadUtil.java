@@ -20,7 +20,10 @@ public class UploadUtil {
     private static final String uploadUrl = "http://chat.unicornsocialmedia.cn/upload/image";
     private static final String TAG = "UploadUtil";
 
-    public static void upload(String path, int type, String mimeType, final QiniuUploadCallback qiniuUploadCallback) {
+    public static void upload(String path, int type, String mimeType, final UploadCallback uploadCallback) {
+        if (uploadCallback != null) {
+            uploadCallback.onStart();
+        }
         OkHttpClient mOkHttpClent = new OkHttpClient();
         File file = new File(path);
         MultipartBody.Builder builder = new MultipartBody.Builder()
@@ -42,8 +45,8 @@ public class UploadUtil {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (qiniuUploadCallback != null) {
-                            qiniuUploadCallback.onFailed(e, "上传失败");
+                        if (uploadCallback != null) {
+                            uploadCallback.onFailed(e, "上传失败");
                         }
                     }
                 });
@@ -55,8 +58,8 @@ public class UploadUtil {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (qiniuUploadCallback != null) {
-                            qiniuUploadCallback.onSuccess();
+                        if (uploadCallback != null) {
+                            uploadCallback.onSuccess();
                         }
                     }
                 });
