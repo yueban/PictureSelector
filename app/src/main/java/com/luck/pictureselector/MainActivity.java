@@ -110,10 +110,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // 预览视频
                             PictureSelector.create(MainActivity.this).externalPictureVideo(media.getPath());
                             break;
-                        case 3:
-                            // 预览音频
-                            PictureSelector.create(MainActivity.this).externalPictureAudio(media.getPath());
-                            break;
                     }
                 }
             }
@@ -154,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (mode) {
                 // 进入相册 以下是例子：不需要的api可以不写
                 PictureSelector.create(MainActivity.this)
-                        .openGallery(chooseMode)// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
+                        .openGallery(chooseMode)// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()
                         .theme(themeId)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style
                         .maxSelectNum(maxSelectNum)// 最大图片选择数量
                         .minSelectNum(1)// 最小选择数量
@@ -163,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 PictureConfig.MULTIPLE : PictureConfig.SINGLE)// 多选 or 单选
                         .previewImage(cb_preview_img.isChecked())// 是否可预览图片
                         .previewVideo(cb_preview_video.isChecked())// 是否可预览视频
-                        .enablePreviewAudio(cb_preview_audio.isChecked()) // 是否可播放音频
                         .isCamera(cb_isCamera.isChecked())// 是否显示拍照按钮
                         .isZoomAnim(true)// 图片列表点击 缩放效果 默认true
                         //.imageFormat(PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
@@ -193,13 +188,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //.rotateEnabled(true) // 裁剪是否可旋转图片
                         //.scaleEnabled(true)// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
-                        //.videoSecond()//显示多少秒以内的视频or音频也可适用
+                        //.videoSecond()//显示多少秒以内的视频
                         //.recordVideoSecond()//录制视频秒数 默认60s
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
             } else {
                 // 单独拍照
                 PictureSelector.create(MainActivity.this)
-                        .openCamera(chooseMode)// 单独拍照，也可录像或也可音频 看你传入的类型是图片or视频
+                        .openCamera(chooseMode)// 单独拍照，也可录像 看你传入的类型是图片or视频
                         .theme(themeId)// 主题样式设置 具体参考 values/styles
                         .maxSelectNum(maxSelectNum)// 最大图片选择数量
                         .minSelectNum(1)// 最小选择数量
@@ -207,7 +202,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 PictureConfig.MULTIPLE : PictureConfig.SINGLE)// 多选 or 单选
                         .previewImage(cb_preview_img.isChecked())// 是否可预览图片
                         .previewVideo(cb_preview_video.isChecked())// 是否可预览视频
-                        .enablePreviewAudio(cb_preview_audio.isChecked()) // 是否可播放音频
                         .isCamera(cb_isCamera.isChecked())// 是否显示拍照按钮
                         .enableCrop(cb_crop.isChecked())// 是否裁剪
                         .compress(cb_compress.isChecked())// 是否压缩
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //.rotateEnabled() // 裁剪是否可旋转图片
                         //.scaleEnabled()// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
-                        //.videoSecond()////显示多少秒以内的视频or音频也可适用
+                        //.videoSecond()////显示多少秒以内的视频
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
             }
         }
@@ -324,10 +318,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cb_compress.setVisibility(View.GONE);
                 cb_preview_audio.setVisibility(View.GONE);
                 cb_crop.setVisibility(View.GONE);
-                break;
-            case R.id.rb_audio:
-                chooseMode = PictureMimeType.ofAudio();
-                cb_preview_audio.setVisibility(View.VISIBLE);
                 break;
             case R.id.rb_crop_default:
                 aspect_ratio_x = 0;

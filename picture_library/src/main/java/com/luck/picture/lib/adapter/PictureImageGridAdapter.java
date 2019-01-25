@@ -15,7 +15,6 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -168,38 +167,28 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             boolean gif = PictureMimeType.isGif(pictureType);
 
             contentHolder.tv_isGif.setVisibility(gif ? View.VISIBLE : View.GONE);
-            if (mimeType == PictureMimeType.ofAudio()) {
-                contentHolder.tv_duration.setVisibility(View.VISIBLE);
-                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.picture_audio);
-                StringUtils.modifyTextViewDrawable(contentHolder.tv_duration, drawable, 0);
-            } else {
-                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.video_icon);
-                StringUtils.modifyTextViewDrawable(contentHolder.tv_duration, drawable, 0);
-                contentHolder.tv_duration.setVisibility(mediaMimeType == PictureConfig.TYPE_VIDEO
-                        ? View.VISIBLE : View.GONE);
-            }
+            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.video_icon);
+            StringUtils.modifyTextViewDrawable(contentHolder.tv_duration, drawable, 0);
+            contentHolder.tv_duration.setVisibility(mediaMimeType == PictureConfig.TYPE_VIDEO
+                    ? View.VISIBLE : View.GONE);
             boolean eqLongImg = PictureMimeType.isLongImg(image);
             contentHolder.tv_long_chart.setVisibility(eqLongImg ? View.VISIBLE : View.GONE);
             long duration = image.getDuration();
             contentHolder.tv_duration.setText(DateUtils.timeParse(duration));
-            if (mimeType == PictureMimeType.ofAudio()) {
-                contentHolder.iv_picture.setImageResource(R.drawable.audio_placeholder);
+            RequestOptions options = new RequestOptions();
+            if (overrideWidth <= 0 && overrideHeight <= 0) {
+                options.sizeMultiplier(sizeMultiplier);
             } else {
-                RequestOptions options = new RequestOptions();
-                if (overrideWidth <= 0 && overrideHeight <= 0) {
-                    options.sizeMultiplier(sizeMultiplier);
-                } else {
-                    options.override(overrideWidth, overrideHeight);
-                }
-                options.diskCacheStrategy(DiskCacheStrategy.ALL);
-                options.centerCrop();
-                options.placeholder(R.drawable.image_placeholder);
-                Glide.with(context)
-                        .asBitmap()
-                        .load(path)
-                        .apply(options)
-                        .into(contentHolder.iv_picture);
+                options.override(overrideWidth, overrideHeight);
             }
+            options.diskCacheStrategy(DiskCacheStrategy.ALL);
+            options.centerCrop();
+            options.placeholder(R.drawable.image_placeholder);
+            Glide.with(context)
+                    .asBitmap()
+                    .load(path)
+                    .apply(options)
+                    .into(contentHolder.iv_picture);
             if (enablePreview || enablePreviewVideo || enablePreviewAudio) {
                 contentHolder.ll_check.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -225,8 +214,6 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                     boolean eqResult =
                             mediaMimeType == PictureConfig.TYPE_IMAGE && enablePreview
                                     || mediaMimeType == PictureConfig.TYPE_VIDEO && (enablePreviewVideo
-                                    || selectMode == PictureConfig.SINGLE)
-                                    || mediaMimeType == PictureConfig.TYPE_AUDIO && (enablePreviewAudio
                                     || selectMode == PictureConfig.SINGLE);
                     if (eqResult) {
                         imageSelectChangedListener.onPictureClick(image, index);
@@ -242,40 +229,6 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemCount() {
         return showCamera ? images.size() + 1 : images.size();
-    }
-
-    public class HeaderViewHolder extends RecyclerView.ViewHolder {
-        View headerView;
-        TextView tv_title_camera;
-
-        public HeaderViewHolder(View itemView) {
-            super(itemView);
-            headerView = itemView;
-            tv_title_camera = (TextView) itemView.findViewById(R.id.tv_title_camera);
-            String title = mimeType == PictureMimeType.ofAudio() ?
-                    context.getString(R.string.picture_tape)
-                    : context.getString(R.string.picture_take_picture);
-            tv_title_camera.setText(title);
-        }
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView iv_picture;
-        TextView check;
-        TextView tv_duration, tv_isGif, tv_long_chart;
-        View contentView;
-        LinearLayout ll_check;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            contentView = itemView;
-            iv_picture = (ImageView) itemView.findViewById(R.id.iv_picture);
-            check = (TextView) itemView.findViewById(R.id.check);
-            ll_check = (LinearLayout) itemView.findViewById(R.id.ll_check);
-            tv_duration = (TextView) itemView.findViewById(R.id.tv_duration);
-            tv_isGif = (TextView) itemView.findViewById(R.id.tv_isGif);
-            tv_long_chart = (TextView) itemView.findViewById(R.id.tv_long_chart);
-        }
     }
 
     public boolean isSelected(LocalMedia image) {
@@ -404,28 +357,6 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
     }
 
-    public interface OnPhotoSelectChangedListener {
-        /**
-         * 拍照回调
-         */
-        void onTakePhoto();
-
-        /**
-         * 已选Media回调
-         *
-         * @param selectImages
-         */
-        void onChange(List<LocalMedia> selectImages);
-
-        /**
-         * 图片预览回调
-         *
-         * @param media
-         * @param position
-         */
-        void onPictureClick(LocalMedia media, int position);
-    }
-
     public void setOnPhotoSelectChangedListener(OnPhotoSelectChangedListener
                                                         imageSelectChangedListener) {
         this.imageSelectChangedListener = imageSelectChangedListener;
@@ -452,6 +383,60 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
             );
             set.setDuration(DURATION);
             set.start();
+        }
+    }
+
+    public interface OnPhotoSelectChangedListener {
+        /**
+         * 拍照回调
+         */
+        void onTakePhoto();
+
+        /**
+         * 已选Media回调
+         *
+         * @param selectImages
+         */
+        void onChange(List<LocalMedia> selectImages);
+
+        /**
+         * 图片预览回调
+         *
+         * @param media
+         * @param position
+         */
+        void onPictureClick(LocalMedia media, int position);
+    }
+
+    public class HeaderViewHolder extends RecyclerView.ViewHolder {
+        View headerView;
+        TextView tv_title_camera;
+
+        public HeaderViewHolder(View itemView) {
+            super(itemView);
+            headerView = itemView;
+            tv_title_camera = (TextView) itemView.findViewById(R.id.tv_title_camera);
+            String title = context.getString(R.string.picture_take_picture);
+            tv_title_camera.setText(title);
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView iv_picture;
+        TextView check;
+        TextView tv_duration, tv_isGif, tv_long_chart;
+        View contentView;
+        LinearLayout ll_check;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            contentView = itemView;
+            iv_picture = (ImageView) itemView.findViewById(R.id.iv_picture);
+            check = (TextView) itemView.findViewById(R.id.check);
+            ll_check = (LinearLayout) itemView.findViewById(R.id.ll_check);
+            tv_duration = (TextView) itemView.findViewById(R.id.tv_duration);
+            tv_isGif = (TextView) itemView.findViewById(R.id.tv_isGif);
+            tv_long_chart = (TextView) itemView.findViewById(R.id.tv_long_chart);
         }
     }
 }

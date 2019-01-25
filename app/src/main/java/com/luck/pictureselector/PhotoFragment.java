@@ -118,10 +118,6 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                         // 预览视频
                         PictureSelector.create(PhotoFragment.this).externalPictureVideo(media.getPath());
                         break;
-                    case 3:
-                        // 预览音频
-                        PictureSelector.create(PhotoFragment.this).externalPictureAudio(media.getPath());
-                        break;
                 }
             }
         });
@@ -141,7 +137,6 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                         .selectionMode(cb_choose_mode.isChecked() ? PictureConfig.MULTIPLE : PictureConfig.SINGLE)
                         .previewImage(cb_preview_img.isChecked())
                         .previewVideo(cb_preview_video.isChecked())
-                        .enablePreviewAudio(cb_preview_audio.isChecked()) // 是否可播放音频
                         .isCamera(cb_isCamera.isChecked())
                         .enableCrop(cb_crop.isChecked())
                         .compress(cb_compress.isChecked())
@@ -167,7 +162,6 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                         .selectionMode(cb_choose_mode.isChecked() ? PictureConfig.MULTIPLE : PictureConfig.SINGLE)
                         .previewImage(cb_preview_img.isChecked())
                         .previewVideo(cb_preview_video.isChecked())
-                        .enablePreviewAudio(cb_preview_audio.isChecked()) // 是否可播放音频
                         .isCamera(cb_isCamera.isChecked())
                         .enableCrop(cb_crop.isChecked())
                         .compress(cb_compress.isChecked())
@@ -260,10 +254,6 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                 cb_preview_img.setVisibility(View.GONE);
                 cb_preview_audio.setVisibility(View.GONE);
                 cb_preview_img.setChecked(false);
-                break;
-            case R.id.rb_audio:
-                chooseMode = PictureMimeType.ofAudio();
-                cb_preview_audio.setVisibility(View.VISIBLE);
                 break;
             case R.id.rb_crop_default:
                 aspect_ratio_x = 0;

@@ -10,13 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.luck.picture.lib.R;
-import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.entity.LocalMediaFolder;
 
@@ -34,6 +32,7 @@ public class PictureAlbumDirectoryAdapter extends RecyclerView.Adapter<PictureAl
     private Context mContext;
     private List<LocalMediaFolder> folders = new ArrayList<>();
     private int mimeType;
+    private OnItemClickListener onItemClickListener;
 
     public PictureAlbumDirectoryAdapter(Context mContext) {
         super();
@@ -72,30 +71,26 @@ public class PictureAlbumDirectoryAdapter extends RecyclerView.Adapter<PictureAl
         int checkedNum = folder.getCheckedNum();
         holder.tv_sign.setVisibility(checkedNum > 0 ? View.VISIBLE : View.INVISIBLE);
         holder.itemView.setSelected(isChecked);
-        if (mimeType == PictureMimeType.ofAudio()) {
-            holder.first_image.setImageResource(R.drawable.audio_placeholder);
-        } else {
-            RequestOptions options = new RequestOptions()
-                    .placeholder(R.drawable.ic_placeholder)
-                    .centerCrop()
-                    .sizeMultiplier(0.5f)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(160, 160);
-            Glide.with(holder.itemView.getContext())
-                    .asBitmap()
-                    .load(imagePath)
-                    .apply(options)
-                    .into(new BitmapImageViewTarget(holder.first_image) {
-                        @Override
-                        protected void setResource(Bitmap resource) {
-                            RoundedBitmapDrawable circularBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.
-                                            create(mContext.getResources(), resource);
-                            circularBitmapDrawable.setCornerRadius(8);
-                            holder.first_image.setImageDrawable(circularBitmapDrawable);
-                        }
-                    });
-        }
+        RequestOptions options = new RequestOptions()
+                .placeholder(R.drawable.ic_placeholder)
+                .centerCrop()
+                .sizeMultiplier(0.5f)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .override(160, 160);
+        Glide.with(holder.itemView.getContext())
+                .asBitmap()
+                .load(imagePath)
+                .apply(options)
+                .into(new BitmapImageViewTarget(holder.first_image) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.
+                                        create(mContext.getResources(), resource);
+                        circularBitmapDrawable.setCornerRadius(8);
+                        holder.first_image.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
         holder.image_num.setText("(" + imageNum + ")");
         holder.tv_folder_name.setText(name);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +113,14 @@ public class PictureAlbumDirectoryAdapter extends RecyclerView.Adapter<PictureAl
         return folders.size();
     }
 
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(String folderName, List<LocalMedia> images);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         ImageView first_image;
         TextView tv_folder_name, image_num, tv_sign;
@@ -129,15 +132,5 @@ public class PictureAlbumDirectoryAdapter extends RecyclerView.Adapter<PictureAl
             image_num = (TextView) itemView.findViewById(R.id.image_num);
             tv_sign = (TextView) itemView.findViewById(R.id.tv_sign);
         }
-    }
-
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(String folderName, List<LocalMedia> images);
     }
 }

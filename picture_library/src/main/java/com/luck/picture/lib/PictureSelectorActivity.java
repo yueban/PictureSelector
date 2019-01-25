@@ -19,12 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.luck.picture.lib.adapter.PictureAlbumDirectoryAdapter;
 import com.luck.picture.lib.adapter.PictureImageGridAdapter;
 import com.luck.picture.lib.config.PictureConfig;
@@ -40,25 +35,19 @@ import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.rxbus2.RxBus;
 import com.luck.picture.lib.rxbus2.Subscribe;
 import com.luck.picture.lib.rxbus2.ThreadMode;
-import com.luck.picture.lib.tools.DateUtils;
-import com.luck.picture.lib.tools.DoubleUtils;
-import com.luck.picture.lib.tools.PictureFileUtils;
-import com.luck.picture.lib.tools.ScreenUtils;
-import com.luck.picture.lib.tools.StringUtils;
-import com.luck.picture.lib.tools.ToastManage;
+import com.luck.picture.lib.tools.*;
 import com.luck.picture.lib.widget.FolderPopWindow;
 import com.luck.picture.lib.widget.PhotoPopupWindow;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropMulti;
 import com.yalantis.ucrop.model.CutInfo;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 /**
  * @author：luck
@@ -71,6 +60,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     private final static String TAG = PictureSelectorActivity.class.getSimpleName();
     private static final int SHOW_DIALOG = 0;
     private static final int DISMISS_DIALOG = 1;
+    //  通过 Handler 更新 UI 上的组件状态
+    public Handler handler = new Handler();
     private ImageView picture_left_back;
     private TextView picture_title, picture_right, picture_tv_ok, tv_empty,
             picture_tv_img_num, picture_id_preview, tv_PlayPause, tv_Stop, tv_Quit,
@@ -89,6 +80,22 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
     private LocalMediaLoader mediaLoader;
     private MediaPlayer mediaPlayer;
     private SeekBar musicSeekBar;
+    public Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                if (mediaPlayer != null) {
+                    tv_musicTime.setText(DateUtils.timeParse(mediaPlayer.getCurrentPosition()));
+                    musicSeekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    musicSeekBar.setMax(mediaPlayer.getDuration());
+                    tv_musicTotal.setText(DateUtils.timeParse(mediaPlayer.getDuration()));
+                    handler.postDelayed(runnable, 200);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
     private boolean isPlayAudio = false;
     private CustomDialog audioDialog;
     private int audioH;
@@ -140,7 +147,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,7 +190,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         }
     }
 
-
     /**
      * init views
      */
@@ -206,21 +211,13 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             popupWindow.setOnItemClickListener(this);
         }
         picture_id_preview.setOnClickListener(this);
-        if (config.mimeType == PictureMimeType.ofAudio()) {
-            picture_id_preview.setVisibility(View.GONE);
-            audioH = ScreenUtils.getScreenHeight(mContext)
-                    + ScreenUtils.getStatusBarHeight(mContext);
-        } else {
-            picture_id_preview.setVisibility(config.mimeType == PictureConfig.TYPE_VIDEO
-                    ? View.GONE : View.VISIBLE);
-        }
+        picture_id_preview.setVisibility(config.mimeType == PictureConfig.TYPE_VIDEO
+                ? View.GONE : View.VISIBLE);
         picture_left_back.setOnClickListener(this);
         picture_right.setOnClickListener(this);
         id_ll_ok.setOnClickListener(this);
         picture_title.setOnClickListener(this);
-        String title = config.mimeType == PictureMimeType.ofAudio() ?
-                getString(R.string.picture_all_audio)
-                : getString(R.string.picture_camera_roll);
+        String title = getString(R.string.picture_camera_roll);
         picture_title.setText(title);
         folderWindow = new FolderPopWindow(this, config.mimeType);
         folderWindow.setPictureTitleView(picture_title);
@@ -257,9 +254,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     public void onComplete() {
                     }
                 });
-        tv_empty.setText(config.mimeType == PictureMimeType.ofAudio() ?
-                getString(R.string.picture_audio_empty)
-                : getString(R.string.picture_empty));
+        tv_empty.setText(getString(R.string.picture_empty));
         StringUtils.tempTextFont(tv_empty, config.mimeType);
         if (savedInstanceState != null) {
             // 防止拍照内存不足时activity被回收，导致拍照后的图片未选中
@@ -356,10 +351,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     // 录视频
                     startOpenCameraVideo();
                     break;
-                case PictureConfig.TYPE_AUDIO:
-                    // 录音
-                    startOpenCameraAudio();
-                    break;
             }
         }
     }
@@ -447,7 +438,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         }
         return imageUri;
     }
-
 
     @Override
     public void onClick(View v) {
@@ -590,25 +580,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         audioDialog.show();
     }
 
-    //  通过 Handler 更新 UI 上的组件状态
-    public Handler handler = new Handler();
-    public Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                if (mediaPlayer != null) {
-                    tv_musicTime.setText(DateUtils.timeParse(mediaPlayer.getCurrentPosition()));
-                    musicSeekBar.setProgress(mediaPlayer.getCurrentPosition());
-                    musicSeekBar.setMax(mediaPlayer.getDuration());
-                    tv_musicTotal.setText(DateUtils.timeParse(mediaPlayer.getDuration()));
-                    handler.postDelayed(runnable, 200);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
     /**
      * 初始化音频播放组件
      *
@@ -623,48 +594,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             playAudio();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    /**
-     * 播放音频点击事件
-     */
-    public class audioOnClick implements View.OnClickListener {
-        private String path;
-
-        public audioOnClick(String path) {
-            super();
-            this.path = path;
-        }
-
-        @Override
-        public void onClick(View v) {
-            int id = v.getId();
-            if (id == R.id.tv_PlayPause) {
-                playAudio();
-            }
-            if (id == R.id.tv_Stop) {
-                tv_musicStatus.setText(getString(R.string.picture_stop_audio));
-                tv_PlayPause.setText(getString(R.string.picture_play_audio));
-                stop(path);
-            }
-            if (id == R.id.tv_Quit) {
-                handler.removeCallbacks(runnable);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        stop(path);
-                    }
-                }, 30);
-                try {
-                    if (audioDialog != null
-                            && audioDialog.isShowing()) {
-                        audioDialog.dismiss();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -815,18 +744,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     startActivity(PictureVideoPlayActivity.class, bundle);
                 }
                 break;
-            case PictureConfig.TYPE_AUDIO:
-                // audio
-                if (config.selectionMode == PictureConfig.SINGLE) {
-                    result.add(media);
-                    onResult(result);
-                } else {
-                    audioDialog(media.getPath());
-                }
-                break;
         }
     }
-
 
     /**
      * change image selector state
@@ -837,13 +756,9 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         // 如果选择的视频没有预览功能
         String pictureType = selectImages.size() > 0
                 ? selectImages.get(0).getPictureType() : "";
-        if (config.mimeType == PictureMimeType.ofAudio()) {
-            picture_id_preview.setVisibility(View.GONE);
-        } else {
-            boolean isVideo = PictureMimeType.isVideo(pictureType);
-            boolean eqVideo = config.mimeType == PictureConfig.TYPE_VIDEO;
-            picture_id_preview.setVisibility(isVideo || eqVideo ? View.GONE : View.VISIBLE);
-        }
+        boolean isVideo = PictureMimeType.isVideo(pictureType);
+        boolean eqVideo = config.mimeType == PictureConfig.TYPE_VIDEO;
+        picture_id_preview.setVisibility(isVideo || eqVideo ? View.GONE : View.VISIBLE);
         boolean enable = selectImages.size() != 0;
         if (enable) {
             id_ll_ok.setEnabled(true);
@@ -877,7 +792,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             }
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -931,17 +845,10 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     handlerResult(medias);
                     break;
                 case PictureConfig.REQUEST_CAMERA:
-                    if (config.mimeType == PictureMimeType.ofAudio()) {
-                        cameraPath = getAudioPath(data);
-                    }
                     // on take photo success
                     final File file = new File(cameraPath);
                     sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
                     String toType = PictureMimeType.fileToType(file);
-                    if (config.mimeType != PictureMimeType.ofAudio()) {
-                        int degree = PictureFileUtils.readPictureDegree(file.getAbsolutePath());
-                        rotateImage(degree, file);
-                    }
                     // 生成新拍照片或视频对象
                     media = new LocalMedia();
                     media.setPath(cameraPath);
@@ -949,13 +856,8 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                     boolean eqVideo = toType.startsWith(PictureConfig.VIDEO);
                     int duration = eqVideo ? PictureMimeType.getLocalVideoDuration(cameraPath) : 0;
                     String pictureType = "";
-                    if (config.mimeType == PictureMimeType.ofAudio()) {
-                        pictureType = "audio/mpeg";
-                        duration = PictureMimeType.getLocalVideoDuration(cameraPath);
-                    } else {
-                        pictureType = eqVideo ? PictureMimeType.createVideoType(cameraPath)
-                                : PictureMimeType.createImageType(cameraPath);
-                    }
+                    pictureType = eqVideo ? PictureMimeType.createVideoType(cameraPath)
+                            : PictureMimeType.createImageType(cameraPath);
                     media.setPictureType(pictureType);
                     media.setDuration(duration);
                     media.setMimeType(config.mimeType);
@@ -1012,13 +914,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                         tv_empty.setVisibility(images.size() > 0
                                 ? View.INVISIBLE : View.VISIBLE);
                     }
-
-                    if (config.mimeType != PictureMimeType.ofAudio()) {
-                        int lastImageId = getLastImageId(eqVideo);
-                        if (lastImageId != -1) {
-                            removeImage(lastImageId, eqVideo);
-                        }
-                    }
                     break;
             }
         } else if (resultCode == RESULT_CANCELED) {
@@ -1043,7 +938,6 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
             }
         }
     }
-
 
     /**
      * 手动添加拍照后的相片到图片列表，并设为选中
@@ -1108,6 +1002,48 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
                 // 录视频
                 startOpenCameraVideo();
                 break;
+        }
+    }
+
+    /**
+     * 播放音频点击事件
+     */
+    public class audioOnClick implements View.OnClickListener {
+        private String path;
+
+        public audioOnClick(String path) {
+            super();
+            this.path = path;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int id = v.getId();
+            if (id == R.id.tv_PlayPause) {
+                playAudio();
+            }
+            if (id == R.id.tv_Stop) {
+                tv_musicStatus.setText(getString(R.string.picture_stop_audio));
+                tv_PlayPause.setText(getString(R.string.picture_play_audio));
+                stop(path);
+            }
+            if (id == R.id.tv_Quit) {
+                handler.removeCallbacks(runnable);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        stop(path);
+                    }
+                }, 30);
+                try {
+                    if (audioDialog != null
+                            && audioDialog.isShowing()) {
+                        audioDialog.dismiss();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

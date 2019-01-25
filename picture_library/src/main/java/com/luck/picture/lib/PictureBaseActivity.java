@@ -7,13 +7,11 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-
 import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.compress.OnCompressListener;
 import com.luck.picture.lib.config.PictureConfig;
@@ -31,16 +29,15 @@ import com.luck.picture.lib.tools.DoubleUtils;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropMulti;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author：luck
@@ -390,8 +387,7 @@ public class PictureBaseActivity extends FragmentActivity {
         if (folders.size() == 0) {
             // 没有相册 先创建一个最近相册出来
             LocalMediaFolder newFolder = new LocalMediaFolder();
-            String folderName = config.mimeType == PictureMimeType.ofAudio() ?
-                    getString(R.string.picture_all_audio) : getString(R.string.picture_camera_roll);
+            String folderName = getString(R.string.picture_camera_roll);
             newFolder.setName(folderName);
             newFolder.setPath("");
             newFolder.setFirstImagePath("");
@@ -517,50 +513,5 @@ public class PictureBaseActivity extends FragmentActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 录音
-     *
-     * @param data
-     */
-    protected String getAudioPath(Intent data) {
-        boolean compare_SDK_19 = Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT;
-        if (data != null && config.mimeType == PictureMimeType.ofAudio()) {
-            try {
-                Uri uri = data.getData();
-                final String audioPath;
-                if (compare_SDK_19) {
-                    audioPath = uri.getPath();
-                } else {
-                    audioPath = getAudioFilePathFromUri(uri);
-                }
-                return audioPath;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return "";
-    }
-
-    /**
-     * 获取刚录取的音频文件
-     *
-     * @param uri
-     * @return
-     */
-    protected String getAudioFilePathFromUri(Uri uri) {
-        String path = "";
-        try {
-            Cursor cursor = getContentResolver()
-                    .query(uri, null, null, null, null);
-            cursor.moveToFirst();
-            int index = cursor.getColumnIndex(MediaStore.Audio.AudioColumns.DATA);
-            path = cursor.getString(index);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return path;
     }
 }

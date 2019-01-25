@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -37,6 +36,7 @@ public class GridImageAdapter extends
         RecyclerView.Adapter<GridImageAdapter.ViewHolder> {
     public static final int TYPE_CAMERA = 1;
     public static final int TYPE_PICTURE = 2;
+    protected OnItemClickListener mItemClickListener;
     private LayoutInflater mInflater;
     private List<LocalMedia> list = new ArrayList<>();
     private int selectMax = 9;
@@ -45,10 +45,6 @@ public class GridImageAdapter extends
      * 点击添加图片跳转
      */
     private onAddPicClickListener mOnAddPicClickListener;
-
-    public interface onAddPicClickListener {
-        void onAddPicClick();
-    }
 
     public GridImageAdapter(Context context, onAddPicClickListener mOnAddPicClickListener) {
         this.context = context;
@@ -62,20 +58,6 @@ public class GridImageAdapter extends
 
     public void setList(List<LocalMedia> list) {
         this.list = list;
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        ImageView mImg;
-        LinearLayout ll_del;
-        TextView tv_duration;
-
-        public ViewHolder(View view) {
-            super(view);
-            mImg = (ImageView) view.findViewById(R.id.fiv);
-            ll_del = (LinearLayout) view.findViewById(R.id.ll_del);
-            tv_duration = (TextView) view.findViewById(R.id.tv_duration);
-        }
     }
 
     @Override
@@ -169,27 +151,17 @@ public class GridImageAdapter extends
             long duration = media.getDuration();
             viewHolder.tv_duration.setVisibility(pictureType == PictureConfig.TYPE_VIDEO
                     ? View.VISIBLE : View.GONE);
-            if (mimeType == PictureMimeType.ofAudio()) {
-                viewHolder.tv_duration.setVisibility(View.VISIBLE);
-                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.picture_audio);
-                StringUtils.modifyTextViewDrawable(viewHolder.tv_duration, drawable, 0);
-            } else {
-                Drawable drawable = ContextCompat.getDrawable(context, R.drawable.video_icon);
-                StringUtils.modifyTextViewDrawable(viewHolder.tv_duration, drawable, 0);
-            }
+            Drawable drawable = ContextCompat.getDrawable(context, R.drawable.video_icon);
+            StringUtils.modifyTextViewDrawable(viewHolder.tv_duration, drawable, 0);
             viewHolder.tv_duration.setText(DateUtils.timeParse(duration));
-            if (mimeType == PictureMimeType.ofAudio()) {
-                viewHolder.mImg.setImageResource(R.drawable.audio_placeholder);
-            } else {
-                RequestOptions options = new RequestOptions()
-                        .centerCrop()
-                        .placeholder(R.color.color_f6)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL);
-                Glide.with(viewHolder.itemView.getContext())
-                        .load(path)
-                        .apply(options)
-                        .into(viewHolder.mImg);
-            }
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.color.color_f6)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+            Glide.with(viewHolder.itemView.getContext())
+                    .load(path)
+                    .apply(options)
+                    .into(viewHolder.mImg);
             //itemView 的点击事件
             if (mItemClickListener != null) {
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -203,13 +175,29 @@ public class GridImageAdapter extends
         }
     }
 
-    protected OnItemClickListener mItemClickListener;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mItemClickListener = listener;
+    }
+
+    public interface onAddPicClickListener {
+        void onAddPicClick();
+    }
 
     public interface OnItemClickListener {
         void onItemClick(int position, View v);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mItemClickListener = listener;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView mImg;
+        LinearLayout ll_del;
+        TextView tv_duration;
+
+        public ViewHolder(View view) {
+            super(view);
+            mImg = (ImageView) view.findViewById(R.id.fiv);
+            ll_del = (LinearLayout) view.findViewById(R.id.ll_del);
+            tv_duration = (TextView) view.findViewById(R.id.tv_duration);
+        }
     }
 }

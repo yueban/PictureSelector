@@ -4,7 +4,6 @@ package com.luck.picture.lib.config;
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 import android.text.TextUtils;
-
 import com.luck.picture.lib.R;
 import com.luck.picture.lib.entity.LocalMedia;
 
@@ -16,10 +15,14 @@ import java.io.File;
  * package：com.luck.picture.lib.config
  * email：893855882@qq.com
  * data：2017/5/24
+ *
  * @author luck
  */
 
 public final class PictureMimeType {
+    public final static String JPEG = ".JPEG";
+    public final static String PNG = ".png";
+
     public static int ofAll() {
         return PictureConfig.TYPE_ALL;
     }
@@ -30,10 +33,6 @@ public final class PictureMimeType {
 
     public static int ofVideo() {
         return PictureConfig.TYPE_VIDEO;
-    }
-
-    public static int ofAudio() {
-        return PictureConfig.TYPE_AUDIO;
     }
 
     public static int isPictureType(String pictureType) {
@@ -61,17 +60,6 @@ public final class PictureMimeType {
             case "video/webm":
             case "video/mp2ts":
                 return PictureConfig.TYPE_VIDEO;
-            case "audio/mpeg":
-            case "audio/x-ms-wma":
-            case "audio/x-wav":
-            case "audio/amr":
-            case "audio/wav":
-            case "audio/aac":
-            case "audio/mp4":
-            case "audio/quicktime":
-            case "audio/lamr":
-            case "audio/3gpp":
-                return PictureConfig.TYPE_AUDIO;
         }
         return PictureConfig.TYPE_IMAGE;
     }
@@ -225,8 +213,6 @@ public final class PictureMimeType {
         if (!TextUtils.isEmpty(pictureType)) {
             if (pictureType.startsWith("video")) {
                 return PictureConfig.TYPE_VIDEO;
-            } else if (pictureType.startsWith("audio")) {
-                return PictureConfig.TYPE_AUDIO;
             }
         }
         return PictureConfig.TYPE_IMAGE;
@@ -314,14 +300,8 @@ public final class PictureMimeType {
                 return ctx.getString(R.string.picture_error);
             case PictureConfig.TYPE_VIDEO:
                 return ctx.getString(R.string.picture_video_error);
-            case PictureConfig.TYPE_AUDIO:
-                return ctx.getString(R.string.picture_audio_error);
             default:
                 return ctx.getString(R.string.picture_error);
         }
     }
-
-    public final static String JPEG = ".JPEG";
-
-    public final static String PNG = ".png";
 }

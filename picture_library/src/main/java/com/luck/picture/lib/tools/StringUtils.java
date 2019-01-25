@@ -6,9 +6,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
-
 import com.luck.picture.lib.R;
-import com.luck.picture.lib.config.PictureMimeType;
 
 /**
  * author：luck
@@ -22,7 +20,6 @@ public class StringUtils {
     public static boolean isCamera(String title) {
         if (!TextUtils.isEmpty(title) && title.startsWith("相机胶卷")
                 || title.startsWith("CameraRoll")
-                || title.startsWith("所有音频")
                 || title.startsWith("All audio")) {
             return true;
         }
@@ -32,9 +29,7 @@ public class StringUtils {
 
     public static void tempTextFont(TextView tv, int mimeType) {
         String text = tv.getText().toString().trim();
-        String str = mimeType == PictureMimeType.ofAudio() ?
-                tv.getContext().getString(R.string.picture_empty_audio_title)
-                : tv.getContext().getString(R.string.picture_empty_title);
+        String str = tv.getContext().getString(R.string.picture_empty_title);
         String sumText = str + text;
         Spannable placeSpan = new SpannableString(sumText);
         placeSpan.setSpan(new RelativeSizeSpan(0.8f), str.length(), sumText.length(),

@@ -68,7 +68,7 @@ public class WebViewActivity extends AppCompatActivity {
 
     private void gotoImageSelect() {
         PictureSelector.create(WebViewActivity.this)
-                .openGallery(PictureMimeType.ofAll())// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
+                .openGallery(PictureMimeType.ofAll())// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()
                 .theme(R.style.picture_white_style)// 主题样式设置 具体参考 values/styles   用法：R.style.picture.white.style
                 .maxSelectNum(1)// 最大图片选择数量
                 .minSelectNum(1)// 最小选择数量
@@ -76,7 +76,7 @@ public class WebViewActivity extends AppCompatActivity {
                 .selectionMode(PictureConfig.SINGLE)// 多选 or 单选
                 .previewImage(true)// 是否可预览图片
                 .previewVideo(true)// 是否可预览视频
-                .enablePreviewAudio(true) // 是否可播放音频
+                .enablePreviewAudio(true) // 是否可播放
                 .isCamera(true)// 是否显示拍照按钮
                 .isZoomAnim(false)// 图片列表点击 缩放效果 默认true
                 //.imageFormat(PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
@@ -106,7 +106,7 @@ public class WebViewActivity extends AppCompatActivity {
                 //.rotateEnabled(true) // 裁剪是否可旋转图片
                 //.scaleEnabled(true)// 裁剪是否可放大缩小图片
                 //.videoQuality()// 视频录制质量 0 or 1
-                //.videoSecond()//显示多少秒以内的视频or音频也可适用
+                //.videoSecond()//显示多少秒以内的视频
                 //.recordVideoSecond()//录制视频秒数 默认60s
                 .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
     }
