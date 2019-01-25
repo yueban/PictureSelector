@@ -21,6 +21,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':ucrop')
+    compile project(':qiniu_lib')
     //noinspection GradleCompatible
     compile "com.android.support:appcompat-v7:${cfgs.androidSupportVersion}"
     //noinspection GradleCompatible

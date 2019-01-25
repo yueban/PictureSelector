@@ -1,1 +1,1 @@
-include ':app', ':picture_library', ':ucrop', ':test'
+include ':app', ':picture_library', ':ucrop', ':test', ':qiniu_lib'

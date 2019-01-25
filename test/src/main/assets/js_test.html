@@ -5,13 +5,16 @@
     <script>
    function androidCallJSWithMedia(name){
       alert("图片地址"+name.path);
+      alert("type--->"+name.type);
+      alert("url--->"+name.url);
       //alert("图片base64内容"+name.content);
-      //document.getElementById("image").src=""+name.path;
-      document.getElementById("image").src="data:image/png;base64, "+name.content;
+      document.getElementById("image").src="file://"+name.path;
+      //document.getElementById("image").src="data:image/png;base64, "+name.content;
    }
     function jsCallAndroidForMedia(){
       JsTest.chooseMedia();
    }
+
 
 
     </script>

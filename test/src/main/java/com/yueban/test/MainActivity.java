@@ -1,28 +1,35 @@
 package com.yueban.test;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.*;
+import android.widget.Toast;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.yueban.qiniu_lib.QiniuUploadCallback;
+import com.yueban.qiniu_lib.UploadUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
-    private WebView webView;
+    private WebView mWebView;
+    private Dialog mLoadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        webView = findViewById(R.id.web_view);
-        WebSettings settings = webView.getSettings();
+        mWebView = findViewById(R.id.web_view);
+        WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
 //        settings.setDatabaseEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -52,18 +59,18 @@ public class MainActivity extends AppCompatActivity {
                 super.onReceivedSslError(view, handler, error);
             }
         };
-        webView.setWebViewClient(WVClient);
-        webView.setWebChromeClient(new WebChromeClient());
+        mWebView.setWebViewClient(WVClient);
+        mWebView.setWebChromeClient(new WebChromeClient());
 
-        PictureSelector.integrateWithWebView(webView, new PictureSelector.OnJsCallback() {
+        PictureSelector.integrateWithWebView(mWebView, new PictureSelector.OnJsCallback() {
             @Override
             public void onJsCallForMedia() {
                 gotoImageSelect();
             }
         }, "JsTest");
 
-//        webView.loadUrl("file:///android_asset/js_test.html");
-        webView.loadUrl("http://192.168.99.112:8081?mobilenum=15736782782");
+        mWebView.loadUrl("file:///android_asset/js_test.html");
+//        mWebView.loadUrl("http://192.168.99.112:8081?mobilenum=15736782782");
     }
 
     private void gotoImageSelect() {
@@ -120,32 +127,115 @@ public class MainActivity extends AppCompatActivity {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 图片选择结果回调
                     LocalMedia media = PictureSelector.obtainSingleResult(data);
-                    String type = media.getMimeType() == PictureConfig.TYPE_IMAGE ? "img" : "video";
-                    String path = media.getFinalPath();
-                    String content = media.toBase64();
+                    final String type = PictureMimeType.isPictureType(media.getPictureType()) == PictureConfig.TYPE_IMAGE ? "img" : "video";
+                    final String path = media.getFinalPath();
+//                    final String content = media.toBase64();
                     Log.i("type----->", type);
                     Log.i("path----->", path);
-                    Log.i("content----->", content);
+//                    Log.i("content----->", content);
+//
+//                    JSONObject jsonObject = new JSONObject();
+//                    try {
+//                        jsonObject.put("type", type);
+//                        jsonObject.put("path", path);
+//                        jsonObject.put("content", content);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    mWebView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
 
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("type", type);
-                        jsonObject.put("path", path);
-                        jsonObject.put("content", content);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    //upload
+                    int updateType = PictureMimeType.isPictureType(media.getPictureType()) == PictureConfig.TYPE_IMAGE ? UploadUtil.TYPE_IMG : UploadUtil.TYPE_VIDEO;
+                    UploadUtil.upload(path, updateType, media.getPictureType(), new QiniuUploadCallback() {
+                        @Override
+                        public void onStart() {
+                            showLoadingDialog();
+                        }
 
-                    webView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+                        @Override
+                        public void onSuccess() {
+                            dismissLoadingDialog();
+
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put("type", type);
+                                jsonObject.put("path", path);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            mWebView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+                        }
+
+                        @Override
+                        public void onFailed(Exception e, String message) {
+                            dismissLoadingDialog();
+                            if (!TextUtils.isEmpty(message)) {
+                                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+
+                    //                    int updateType = PictureMimeType.isPictureType(media.getPictureType()) == PictureConfig.TYPE_IMAGE ? QiniuUploadConfig.TYPE_IMG : QiniuUploadConfig.TYPE_VIDEO;
+//                    QiniuUploadUtil.Holder.INSTANCE.uploadFile(path, updateType,
+//                            new QiniuUploadCallback() {
+//                                @Override
+//                                public void onStart() {
+//                                    showLoadingDialog();
+//                                }
+//
+//                                @Override
+//                                public void onSuccess() {
+//                                    dismissLoadingDialog();
+//                                    String url = domain + "/" + fileKey;
+//                                    Log.i("url----->", url);
+//
+//                                    JSONObject jsonObject = new JSONObject();
+//                                    try {
+//                                        jsonObject.put("type", type);
+//                                        jsonObject.put("path", path);
+//                                        jsonObject.put("url", url);
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    mWebView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+//                                }
+//
+//                                @Override
+//                                public void onFailed(Exception e, String message) {
+//                                    dismissLoadingDialog();
+//                                    if (!TextUtils.isEmpty(message)) {
+//                                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+//                                    }
+//                                }
+//                            });
+
+
                     break;
             }
         }
     }
 
+    private void showLoadingDialog() {
+        if (mLoadingDialog == null) {
+            mLoadingDialog = new AlertDialog.Builder(this).create();
+            mLoadingDialog.setContentView(R.layout.dialog_loading);
+            mLoadingDialog.setCancelable(false);
+            mLoadingDialog.setCanceledOnTouchOutside(false);
+        }
+        mLoadingDialog.show();
+    }
+
+    private void dismissLoadingDialog() {
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+            mLoadingDialog.dismiss();
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
         } else {
             super.onBackPressed();
         }
