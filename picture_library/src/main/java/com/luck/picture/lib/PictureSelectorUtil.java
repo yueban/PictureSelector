@@ -63,7 +63,6 @@ public class PictureSelectorUtil {
             public void chooseMedia(final String type, String uploadUrl) {
                 mUploadUrl = uploadUrl;
                 if (mActivityRef.get() != null) {
-                    // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
                     RxPermissions permissions = new RxPermissions(mActivityRef.get());
                     permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
                         @Override
@@ -74,7 +73,6 @@ public class PictureSelectorUtil {
                         public void onNext(Boolean aBoolean) {
                             if (mActivityRef.get() != null) {
                                 if (aBoolean) {
-                                    PictureFileUtils.deleteCacheDirFile(mActivityRef.get());
                                     gotoImageSelector(mActivityRef.get(), type);
                                 } else {
                                     ToastManage.s(mActivityRef.get(), mActivityRef.get().getString(R.string.picture_jurisdiction));
@@ -157,6 +155,33 @@ public class PictureSelectorUtil {
                             }
                             if (mWebViewRef != null && mWebViewRef.get() != null) {
                                 mWebViewRef.get().loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+                            }
+
+                            //清除包括裁剪和压缩后的缓存
+                            if (mActivityRef.get() != null) {
+                                RxPermissions permissions = new RxPermissions(mActivityRef.get());
+                                permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
+                                    @Override
+                                    public void onSubscribe(Disposable d) {
+                                    }
+
+                                    @Override
+                                    public void onNext(Boolean aBoolean) {
+                                        if (mActivityRef.get() != null) {
+                                            if (aBoolean) {
+                                                PictureFileUtils.deleteCacheDirFile(mActivityRef.get());
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable e) {
+                                    }
+
+                                    @Override
+                                    public void onComplete() {
+                                    }
+                                });
                             }
                         }
                     });
