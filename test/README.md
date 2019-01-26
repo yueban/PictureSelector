@@ -20,6 +20,15 @@ dependencies {
 }
 ```
 
+#### 2. AndroidManifest 中添加权限
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.CAMERA"/>
+<uses-permission android:name="android.permission.INTERNET"/>
+```
+
 #### 2. WebView 所在的 Activity 中添加:
 
 ```java
