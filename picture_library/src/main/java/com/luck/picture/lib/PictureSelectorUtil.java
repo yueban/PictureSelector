@@ -1,25 +1,35 @@
 package com.luck.picture.lib;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.Toast;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.tools.JSObject;
+import com.luck.picture.lib.tools.PictureFileUtils;
+import com.luck.picture.lib.tools.ToastManage;
 import com.yueban.qiniu_lib.UploadCallback;
 import com.yueban.qiniu_lib.UploadUtil;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 
 /**
  * @author yueban
@@ -50,10 +60,36 @@ public class PictureSelectorUtil {
         settings.setAllowFileAccess(true);
         webView.addJavascriptInterface(new JSObject(new JSObject.OnJsCallAndroid() {
             @Override
-            public void chooseMedia(String type, String uploadUrl) {
+            public void chooseMedia(final String type, String uploadUrl) {
                 mUploadUrl = uploadUrl;
                 if (mActivityRef.get() != null) {
-                    gotoImageSelector(mActivityRef.get(), type);
+                    // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
+                    RxPermissions permissions = new RxPermissions(mActivityRef.get());
+                    permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                        }
+
+                        @Override
+                        public void onNext(Boolean aBoolean) {
+                            if (mActivityRef.get() != null) {
+                                if (aBoolean) {
+                                    PictureFileUtils.deleteCacheDirFile(mActivityRef.get());
+                                    gotoImageSelector(mActivityRef.get(), type);
+                                } else {
+                                    ToastManage.s(mActivityRef.get(), mActivityRef.get().getString(R.string.picture_jurisdiction));
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                        }
+
+                        @Override
+                        public void onComplete() {
+                        }
+                    });
                 }
             }
         }), "JsTest");
@@ -84,32 +120,43 @@ public class PictureSelectorUtil {
                         }
 
                         @Override
-                        public void onSuccess(String result) {
+                        public void onSuccess(int status_code, String result) {
                             Log.i("response--->", result);
                             dismissLoadingDialog();
 
+                            JSONObject jsonObject;
                             try {
-                                JSONObject jsonObject = new JSONObject(result);
-                                jsonObject.put("type", type);
-                                jsonObject.put("path", path);
-                                if (mWebViewRef != null && mWebViewRef.get() != null) {
-                                    mWebViewRef.get().loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
-                                }
+                                jsonObject = new JSONObject(result);
                             } catch (JSONException e) {
-                                if (mActivityRef.get() != null) {
-                                    Toast.makeText(mActivityRef.get(), "上传失败: 上传数据解析失败", Toast.LENGTH_SHORT).show();
-                                }
-                                e.printStackTrace();
+                                jsonObject = new JSONObject();
                             }
+
+                            sendToWebView(jsonObject, status_code, null);
                         }
 
                         @Override
-                        public void onFailed(Exception e, String message) {
+                        public void onFailed(Exception e) {
                             dismissLoadingDialog();
-                            if (!TextUtils.isEmpty(message)) {
-                                if (mActivityRef.get() != null) {
-                                    Toast.makeText(mActivityRef.get(), message, Toast.LENGTH_SHORT).show();
+                            if (e instanceof SocketTimeoutException) {
+                                sendToWebView(new JSONObject(), 408, "上传超时");
+                            } else {
+                                sendToWebView(new JSONObject(), 400, "上传失败");
+                            }
+                        }
+
+                        private void sendToWebView(@NonNull JSONObject jsonObject, int status_code, @Nullable String errorMsg) {
+                            try {
+                                jsonObject.put("type", type);
+                                jsonObject.put("path", path);
+                                jsonObject.put("status_code", status_code);
+                                if (!TextUtils.isEmpty(errorMsg)) {
+                                    jsonObject.put("message", errorMsg);
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            if (mWebViewRef != null && mWebViewRef.get() != null) {
+                                mWebViewRef.get().loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
                             }
                         }
                     });
@@ -184,8 +231,13 @@ public class PictureSelectorUtil {
             return;
         }
         if (mLoadingDialogRef == null || mLoadingDialogRef.get() == null) {
-            Dialog loadingDialog = new AlertDialog.Builder(mActivityRef.get()).create();
-            loadingDialog.setContentView(R.layout.dialog_loading);
+            Dialog loadingDialog = new AlertDialog.Builder(mActivityRef.get())
+                    .setView(R.layout.dialog_loading)
+                    .create();
+            Window window = loadingDialog.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable());
+            }
             loadingDialog.setCancelable(false);
             loadingDialog.setCanceledOnTouchOutside(false);
             mLoadingDialogRef = new WeakReference<>(loadingDialog);

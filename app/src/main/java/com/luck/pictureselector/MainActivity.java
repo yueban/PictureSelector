@@ -10,27 +10,21 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.tools.PictureFileUtils;
+import com.luck.picture.lib.tools.ToastManage;
 import com.luck.pictureselector.adapter.GridImageAdapter;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
@@ -49,100 +43,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cb_showCropFrame, cb_preview_audio;
     private int themeId;
     private int chooseMode = PictureMimeType.ofAll();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        themeId = R.style.picture_default_style;
-        minus = (ImageView) findViewById(R.id.minus);
-        plus = (ImageView) findViewById(R.id.plus);
-        tv_select_num = (TextView) findViewById(R.id.tv_select_num);
-        rgb_crop = (RadioGroup) findViewById(R.id.rgb_crop);
-        rgb_style = (RadioGroup) findViewById(R.id.rgb_style);
-        rgb_photo_mode = (RadioGroup) findViewById(R.id.rgb_photo_mode);
-        cb_voice = (CheckBox) findViewById(R.id.cb_voice);
-        cb_choose_mode = (CheckBox) findViewById(R.id.cb_choose_mode);
-        cb_isCamera = (CheckBox) findViewById(R.id.cb_isCamera);
-        cb_isGif = (CheckBox) findViewById(R.id.cb_isGif);
-        cb_preview_img = (CheckBox) findViewById(R.id.cb_preview_img);
-        cb_preview_video = (CheckBox) findViewById(R.id.cb_preview_video);
-        cb_crop = (CheckBox) findViewById(R.id.cb_crop);
-        cb_styleCrop = (CheckBox) findViewById(R.id.cb_styleCrop);
-        cb_compress = (CheckBox) findViewById(R.id.cb_compress);
-        cb_mode = (CheckBox) findViewById(R.id.cb_mode);
-        cb_showCropGrid = (CheckBox) findViewById(R.id.cb_showCropGrid);
-        cb_showCropFrame = (CheckBox) findViewById(R.id.cb_showCropFrame);
-        cb_preview_audio = (CheckBox) findViewById(R.id.cb_preview_audio);
-        cb_hide = (CheckBox) findViewById(R.id.cb_hide);
-        cb_crop_circular = (CheckBox) findViewById(R.id.cb_crop_circular);
-        rgb_crop.setOnCheckedChangeListener(this);
-        rgb_style.setOnCheckedChangeListener(this);
-        rgb_photo_mode.setOnCheckedChangeListener(this);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        left_back = (ImageView) findViewById(R.id.left_back);
-        left_back.setOnClickListener(this);
-        minus.setOnClickListener(this);
-        plus.setOnClickListener(this);
-        cb_crop.setOnCheckedChangeListener(this);
-        cb_crop_circular.setOnCheckedChangeListener(this);
-        cb_compress.setOnCheckedChangeListener(this);
-        FullyGridLayoutManager manager = new FullyGridLayoutManager(MainActivity.this, 4, GridLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(manager);
-        adapter = new GridImageAdapter(MainActivity.this, onAddPicClickListener);
-        adapter.setList(selectList);
-        adapter.setSelectMax(maxSelectNum);
-        recyclerView.setAdapter(adapter);
-        adapter.setOnItemClickListener(new GridImageAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position, View v) {
-                if (selectList.size() > 0) {
-                    LocalMedia media = selectList.get(position);
-                    String pictureType = media.getPictureType();
-                    int mediaType = PictureMimeType.pictureToVideo(pictureType);
-                    switch (mediaType) {
-                        case 1:
-                            // 预览图片 可自定长按保存路径
-                            //PictureSelector.create(MainActivity.this).themeStyle(themeId).externalPicturePreview(position, "/custom_file", selectList);
-                            PictureSelector.create(MainActivity.this).themeStyle(themeId).openExternalPreview(position, selectList);
-                            break;
-                        case 2:
-                            // 预览视频
-                            PictureSelector.create(MainActivity.this).externalPictureVideo(media.getPath());
-                            break;
-                    }
-                }
-            }
-        });
-
-        // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
-        RxPermissions permissions = new RxPermissions(this);
-        permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-            }
-
-            @Override
-            public void onNext(Boolean aBoolean) {
-                if (aBoolean) {
-                    PictureFileUtils.deleteCacheDirFile(MainActivity.this);
-                } else {
-                    Toast.makeText(MainActivity.this,
-                            getString(R.string.picture_jurisdiction), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        });
-
-    }
-
     private GridImageAdapter.onAddPicClickListener onAddPicClickListener = new GridImageAdapter.onAddPicClickListener() {
         @Override
         public void onAddPicClick() {
@@ -229,6 +129,99 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     };
+    private int x = 0, y = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        themeId = R.style.picture_default_style;
+        minus = (ImageView) findViewById(R.id.minus);
+        plus = (ImageView) findViewById(R.id.plus);
+        tv_select_num = (TextView) findViewById(R.id.tv_select_num);
+        rgb_crop = (RadioGroup) findViewById(R.id.rgb_crop);
+        rgb_style = (RadioGroup) findViewById(R.id.rgb_style);
+        rgb_photo_mode = (RadioGroup) findViewById(R.id.rgb_photo_mode);
+        cb_voice = (CheckBox) findViewById(R.id.cb_voice);
+        cb_choose_mode = (CheckBox) findViewById(R.id.cb_choose_mode);
+        cb_isCamera = (CheckBox) findViewById(R.id.cb_isCamera);
+        cb_isGif = (CheckBox) findViewById(R.id.cb_isGif);
+        cb_preview_img = (CheckBox) findViewById(R.id.cb_preview_img);
+        cb_preview_video = (CheckBox) findViewById(R.id.cb_preview_video);
+        cb_crop = (CheckBox) findViewById(R.id.cb_crop);
+        cb_styleCrop = (CheckBox) findViewById(R.id.cb_styleCrop);
+        cb_compress = (CheckBox) findViewById(R.id.cb_compress);
+        cb_mode = (CheckBox) findViewById(R.id.cb_mode);
+        cb_showCropGrid = (CheckBox) findViewById(R.id.cb_showCropGrid);
+        cb_showCropFrame = (CheckBox) findViewById(R.id.cb_showCropFrame);
+        cb_preview_audio = (CheckBox) findViewById(R.id.cb_preview_audio);
+        cb_hide = (CheckBox) findViewById(R.id.cb_hide);
+        cb_crop_circular = (CheckBox) findViewById(R.id.cb_crop_circular);
+        rgb_crop.setOnCheckedChangeListener(this);
+        rgb_style.setOnCheckedChangeListener(this);
+        rgb_photo_mode.setOnCheckedChangeListener(this);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        left_back = (ImageView) findViewById(R.id.left_back);
+        left_back.setOnClickListener(this);
+        minus.setOnClickListener(this);
+        plus.setOnClickListener(this);
+        cb_crop.setOnCheckedChangeListener(this);
+        cb_crop_circular.setOnCheckedChangeListener(this);
+        cb_compress.setOnCheckedChangeListener(this);
+        FullyGridLayoutManager manager = new FullyGridLayoutManager(MainActivity.this, 4, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(manager);
+        adapter = new GridImageAdapter(MainActivity.this, onAddPicClickListener);
+        adapter.setList(selectList);
+        adapter.setSelectMax(maxSelectNum);
+        recyclerView.setAdapter(adapter);
+        adapter.setOnItemClickListener(new GridImageAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                if (selectList.size() > 0) {
+                    LocalMedia media = selectList.get(position);
+                    String pictureType = media.getPictureType();
+                    int mediaType = PictureMimeType.pictureToVideo(pictureType);
+                    switch (mediaType) {
+                        case 1:
+                            // 预览图片 可自定长按保存路径
+                            //PictureSelector.create(MainActivity.this).themeStyle(themeId).externalPicturePreview(position, "/custom_file", selectList);
+                            PictureSelector.create(MainActivity.this).themeStyle(themeId).openExternalPreview(position, selectList);
+                            break;
+                        case 2:
+                            // 预览视频
+                            PictureSelector.create(MainActivity.this).externalPictureVideo(media.getPath());
+                            break;
+                    }
+                }
+            }
+        });
+
+        // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
+        RxPermissions permissions = new RxPermissions(this);
+        permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                if (aBoolean) {
+                    PictureFileUtils.deleteCacheDirFile(MainActivity.this);
+                } else {
+                    ToastManage.s(MainActivity.this, getString(R.string.picture_jurisdiction));
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -353,8 +346,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
-    private int x = 0, y = 0;
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

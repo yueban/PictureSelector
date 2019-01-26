@@ -3,12 +3,10 @@ package com.luck.pictureselector;
 import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
-
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.tools.PictureFileUtils;
-
+import com.luck.picture.lib.tools.ToastManage;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -42,8 +40,7 @@ public class PhotoFragmentActivity extends AppCompatActivity {
                 if (aBoolean) {
                     PictureFileUtils.deleteCacheDirFile(PhotoFragmentActivity.this);
                 } else {
-                    Toast.makeText(PhotoFragmentActivity.this,
-                            getString(R.string.picture_jurisdiction), Toast.LENGTH_SHORT).show();
+                    ToastManage.s(PhotoFragmentActivity.this, getString(R.string.picture_jurisdiction));
                 }
             }
 

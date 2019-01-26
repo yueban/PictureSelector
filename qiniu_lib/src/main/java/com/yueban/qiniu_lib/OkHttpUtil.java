@@ -3,6 +3,8 @@ package com.yueban.qiniu_lib;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author yueban
  * @date 2019/1/25
@@ -13,13 +15,18 @@ class OkHttpUtil {
 
     static OkHttpClient getClient() {
         if (mOkHttpClient == null) {
+            final OkHttpClient.Builder builder;
             if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
                 logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-                mOkHttpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+                builder = new OkHttpClient.Builder().addInterceptor(logging);
             } else {
-                mOkHttpClient = new OkHttpClient();
+                builder = new OkHttpClient.Builder();
             }
+            mOkHttpClient = builder
+                    .readTimeout(5, TimeUnit.SECONDS)
+                    .writeTimeout(5, TimeUnit.SECONDS)
+                    .build();
         }
         return mOkHttpClient;
     }
