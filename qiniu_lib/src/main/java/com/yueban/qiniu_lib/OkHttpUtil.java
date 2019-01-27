@@ -15,8 +15,8 @@ class OkHttpUtil {
     static OkHttpClient getClient() {
         if (mOkHttpClient == null) {
             mOkHttpClient = new OkHttpClient.Builder()
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
+                    .writeTimeout(20, TimeUnit.SECONDS)
                     .build();
         }
         return mOkHttpClient;
