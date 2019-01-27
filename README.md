@@ -29,7 +29,7 @@ dependencies {
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-#### 2. WebView 所在的 Activity 中添加:
+#### 3. WebView 所在的 Activity 中添加:
 
 ```java
 public class MainActivity extends AppCompatActivity {
