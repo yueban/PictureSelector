@@ -60,7 +60,7 @@ public class WebViewActivity extends AppCompatActivity {
 //            public void onJsCallForMedia() {
 //                gotoImageSelect();
 //            }
-//        }, "JsTest");
+//        }, "upload");
 
 
         webView.loadUrl("file:///android_asset/js_test.html");
@@ -134,7 +134,7 @@ public class WebViewActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    webView.loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+                    webView.loadUrl("javascript:callbackWithUploadMedia(" + jsonObject + ")");
                     break;
             }
         }

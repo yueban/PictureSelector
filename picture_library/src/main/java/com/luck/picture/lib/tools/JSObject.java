@@ -15,11 +15,11 @@ public class JSObject {
     }
 
     @JavascriptInterface
-    public void chooseMedia(String type, String uploadUrl) {
-        onJsCallAndroid.chooseMedia(type, uploadUrl);
+    public void uploadMedia(String type, String uploadUrl) {
+        onJsCallAndroid.uploadMedia(type, uploadUrl);
     }
 
     public interface OnJsCallAndroid {
-        void chooseMedia(String type, String uploadUrl);
+        void uploadMedia(String type, String uploadUrl);
     }
 }

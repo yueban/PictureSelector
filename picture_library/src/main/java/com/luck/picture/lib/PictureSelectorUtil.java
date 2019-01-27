@@ -60,7 +60,7 @@ public class PictureSelectorUtil {
         settings.setAllowFileAccess(true);
         webView.addJavascriptInterface(new JSObject(new JSObject.OnJsCallAndroid() {
             @Override
-            public void chooseMedia(final String type, String uploadUrl) {
+            public void uploadMedia(final String type, String uploadUrl) {
                 mUploadUrl = uploadUrl;
                 if (mActivityRef.get() != null) {
                     RxPermissions permissions = new RxPermissions(mActivityRef.get());
@@ -90,7 +90,7 @@ public class PictureSelectorUtil {
                     });
                 }
             }
-        }), "JsTest");
+        }), "upload");
     }
 
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
@@ -154,7 +154,7 @@ public class PictureSelectorUtil {
                                 e.printStackTrace();
                             }
                             if (mWebViewRef != null && mWebViewRef.get() != null) {
-                                mWebViewRef.get().loadUrl("javascript:androidCallJSWithMedia(" + jsonObject + ")");
+                                mWebViewRef.get().loadUrl("javascript:callbackWithUploadMedia(" + jsonObject + ")");
                             }
 
                             //清除包括裁剪和压缩后的缓存
