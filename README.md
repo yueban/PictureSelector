@@ -16,7 +16,7 @@ allprojects {
 
 ```groovy
 dependencies {
-    implementation 'com.github.yueban.PictureSelector:picture_library:v2.3.0'
+    implementation 'com.github.yueban.PictureSelector:picture_library:v2.3.1'
 }
 ```
 
