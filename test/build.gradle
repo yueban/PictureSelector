@@ -27,9 +27,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':picture_library')
+//    implementation project(':picture_library')
 
-    implementation 'com.github.yueban.PictureSelector:picture_library:v2.3.0'
+    implementation 'com.github.yueban.PictureSelector:picture_library:v2.3.1'
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

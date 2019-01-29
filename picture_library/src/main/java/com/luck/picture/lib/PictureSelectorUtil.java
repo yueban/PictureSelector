@@ -192,8 +192,12 @@ public class PictureSelectorUtil {
 
     public void onDestroy() {
         mActivityRef.clear();
-        mWebViewRef.clear();
-        mLoadingDialogRef.clear();
+        if (mWebViewRef != null) {
+            mWebViewRef.clear();
+        }
+        if (mLoadingDialogRef != null) {
+            mLoadingDialogRef.clear();
+        }
     }
 
     private void gotoImageSelector(Activity activity, String type) {
