@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion cfgs.compileSdkVersion
@@ -16,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -29,4 +33,14 @@ dependencies {
     api "com.github.bumptech.glide:glide:${cfgs.glide}"
     api "io.reactivex.rxjava2:rxjava:${cfgs.rxjava}"
     api "io.reactivex.rxjava2:rxandroid:${cfgs.rxandroid}"
+}
+
+publish {
+    repoName = 'maven'
+    userOrg = 'yueban'
+    groupId = 'com.yueban'
+    artifactId = 'picture_library'
+    publishVersion = '2.3.1'
+    desc = 'picture selector for android'
+    website = 'https://github.com/yueban/PictureSelector'
 }
