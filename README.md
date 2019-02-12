@@ -20,10 +20,6 @@ dependencies {
 }
 ```
 
-(可选) 或者直接下载 aar 文件并集成到项目中:
-
-[picture_library-v2.3.1.aar](https://github.com/yueban/PictureSelector/raw/master/picture_library-v2.3.1.aar)
-
 #### 2. AndroidManifest 中添加权限
 
 ```xml
