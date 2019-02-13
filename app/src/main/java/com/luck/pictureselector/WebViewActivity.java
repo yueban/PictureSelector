@@ -31,7 +31,7 @@ public class WebViewActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_webview);
 
-        webView = findViewById(R.id.web_view);
+        webView = (WebView) findViewById(R.id.web_view);
         WebSettings settings = webView.getSettings();
         settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         settings.setSupportMultipleWindows(true);
