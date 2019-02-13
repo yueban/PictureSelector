@@ -2,21 +2,11 @@
 
 #### 1. 添加 gradle 引用
 
-项目根目录 `build.gradle` 添加:
-
-```groovy
-allprojects {
-   repositories {
-      maven { url 'https://jitpack.io' }
-   }
-}
-```
-
 模块 `build.gradle` 添加:
 
 ```groovy
 dependencies {
-    implementation 'com.github.yueban.PictureSelector:picture_library:v2.3.1'
+    implementation 'com.yueban:picture_library:2.3.4'
 }
 ```
 
