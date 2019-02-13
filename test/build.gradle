@@ -22,7 +22,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
 //    implementation project(':picture_library')
-    implementation 'com.yueban:picture_library:2.3.4'
+    implementation 'com.yueban:picture_library:2.3.5'
 
     implementation "com.android.support:appcompat-v7:${cfgs.androidSupportVersion}"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
