@@ -1,0 +1,8 @@
+publish {
+    repoName = 'maven'
+    userOrg = 'yueban'
+    groupId = 'com.yueban.PictureSelector'
+    publishVersion = '2.3.4'
+    desc = 'picture selector for android'
+    website = 'https://github.com/yueban/PictureSelector'
+}

@@ -35,12 +35,9 @@ dependencies {
     api "io.reactivex.rxjava2:rxandroid:${cfgs.rxandroid}"
 }
 
+apply from: '../buildsystem/setupPublishExtension.gradle'
 publish {
-    repoName = 'maven'
-    userOrg = 'yueban'
+    // 这边单独指定一下 groupId, 因为在早期版本上传时使用的 groupId 与其他不同，修改需要给 jcenter 发邮件，时间紧，暂不处理
     groupId = 'com.yueban'
     artifactId = 'picture_library'
-    publishVersion = '2.3.2'
-    desc = 'picture selector for android'
-    website = 'https://github.com/yueban/PictureSelector'
 }
