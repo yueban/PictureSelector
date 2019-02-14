@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion cfgs.compileSdkVersion
@@ -37,7 +38,12 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
+//gradlew bintrayUpload
 apply from: '../buildsystem/setupPublishExtension.gradle'
-publish {
-    artifactId = 'qiniu_lib'
+group = "com.yueban.PictureSelector"
+
+bintray {
+    pkg {
+        name = "qiniu_lib"    // 发布到JCenter上的项目名
+    }
 }

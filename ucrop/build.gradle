@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion cfgs.compileSdkVersion
@@ -39,7 +40,12 @@ dependencies {
     compile "com.github.bumptech.glide:glide:${cfgs.glide}"
 }
 
+//gradlew bintrayUpload
 apply from: '../buildsystem/setupPublishExtension.gradle'
-publish {
-    artifactId = 'ucrop'
+group = "com.yueban.PictureSelector"
+
+bintray {
+    pkg {
+        name = "ucrop"    // 发布到JCenter上的项目名
+    }
 }

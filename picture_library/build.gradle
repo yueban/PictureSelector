@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion cfgs.compileSdkVersion
@@ -36,9 +37,12 @@ dependencies {
     compile "io.reactivex.rxjava2:rxandroid:${cfgs.rxandroid}"
 }
 
+//gradlew bintrayUpload
 apply from: '../buildsystem/setupPublishExtension.gradle'
-publish {
-    // 这边单独指定一下 groupId, 因为在早期版本上传时使用的 groupId 与其他不同，修改需要给 jcenter 发邮件，时间紧，暂不处理
-    groupId = 'com.yueban'
-    artifactId = 'picture_library'
+group = "com.yueban" // 一般为包名
+
+bintray {
+    pkg {
+        name = "picture_library"    // 发布到JCenter上的项目名
+    }
 }
