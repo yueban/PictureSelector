@@ -33,9 +33,6 @@ dependencies {
 
 
     compile "com.android.support:appcompat-v7:${cfgs.androidSupportVersion}"
-    testCompile 'junit:junit:4.12'
-    androidTestCompile 'com.android.support.test:runner:1.0.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
 //gradlew bintrayUpload
