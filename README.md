@@ -2,26 +2,11 @@
 
 #### 1. 添加 gradle 引用
 
-如果项目中出现，因 library 依赖版本不同导致的编译问题，可在项目根目录 `build.gradle` 中添加:
-
-```groovy
-subprojects {
-    project.configurations.all {
-        resolutionStrategy.eachDependency { details ->
-            if (details.requested.group == 'com.android.support'
-                    && !details.requested.name.contains('multidex')) {
-                details.useVersion "25.4.0"
-            }
-        }
-    }
-}
-```
-
 模块 `build.gradle` 添加:
 
 ```groovy
 dependencies {
-    implementation 'com.yueban:picture_library:2.3.6'
+    implementation 'com.yueban:picture_library:2.3.7'
 }
 ```
 
