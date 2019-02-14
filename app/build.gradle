@@ -6,6 +6,7 @@ android {
     defaultConfig {
         applicationId "com.luck.pictureselector"
         minSdkVersion cfgs.minSdkVersion
+        buildToolsVersion cfgs.buildToolsVersion
         targetSdkVersion cfgs.targetSdkVersion
         versionCode cfgs.versionCode
         versionName cfgs.versionName
@@ -19,9 +20,9 @@ android {
 }
 
 dependencies {
-    api project(':picture_library')
+    compile project(':picture_library')
 
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 }

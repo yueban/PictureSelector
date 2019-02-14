@@ -6,6 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion cfgs.minSdkVersion
+        buildToolsVersion cfgs.buildToolsVersion
         targetSdkVersion cfgs.targetSdkVersion
         versionCode cfgs.versionCode
         versionName cfgs.versionName
@@ -24,16 +25,16 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "com.squareup.okhttp3:okhttp:3.12.1"
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+    compile "com.squareup.okhttp3:okhttp:3.12.1"
+    compile 'com.squareup.okhttp3:logging-interceptor:3.12.1'
 
 
-    implementation "com.android.support:appcompat-v7:${cfgs.androidSupportVersion}"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    compile "com.android.support:appcompat-v7:${cfgs.androidSupportVersion}"
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
 apply from: '../buildsystem/setupPublishExtension.gradle'
