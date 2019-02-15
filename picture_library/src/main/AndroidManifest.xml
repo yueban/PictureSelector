@@ -25,7 +25,7 @@
         <activity android:name=".PictureExternalPreviewActivity"/>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name="com.yalantis.ucrop.PictureMultiCuttingActivity"/>
         <activity android:name=".PicturePlayAudioActivity"/>
 
