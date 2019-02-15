@@ -6,7 +6,7 @@
 
 ```groovy
 dependencies {
-    implementation 'com.yueban:picture_library:2.3.8'
+    implementation 'com.yueban:picture_library:2.3.9'
 }
 ```
 

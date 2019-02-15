@@ -1,7 +1,7 @@
 def siteUrl = 'https://github.com/yueban/PictureSelector'    // Git项目主页
 def gitUrl = 'https://github.com/yueban/PictureSelector.git' // Git仓库url
 
-version = "2.3.8"
+version = "2.3.9"
 
 install {
     repositories.mavenInstaller {
