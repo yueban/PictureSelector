@@ -19,10 +19,14 @@ dependencies {
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-#### 3. WebView 所在的 Activity 中添加:
+#### 3. 配置 WebView 所在的 Activity:
+
+##### 3.1 确保 `Activity` 继承于 `AppCompatActivity`, 且其所设置的 `theme` 继承于 `Theme.AppCompat` 下的某一个 `theme`, 原因如下参见 [链接](https://blog.csdn.net/qq_32452623/article/details/52292426)
+
+##### 3.2 java 代码中添加:
 
 ```java
-public class MainActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity {
     private PictureSelectorUtil pictureSelectorUtil;
 
     @Override
