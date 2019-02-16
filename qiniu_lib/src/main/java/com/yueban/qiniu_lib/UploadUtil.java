@@ -59,22 +59,23 @@ public class UploadUtil {
                     @Override
                     public void onResponse(@NonNull Call call, @NonNull final Response response) {
                         Log.e(TAG, "成功" + response);
+                        String result;
+                        if (response.body() == null) {
+                            result = "";
+                        } else {
+                            try {
+                                result = response.body().string();
+                            } catch (IOException e) {
+                                result = "";
+                                e.printStackTrace();
+                            }
+                        }
+                        final String finalResult = result;
                         AsyncRun.runInMain(new Runnable() {
                             @Override
                             public void run() {
                                 if (uploadCallback != null) {
-                                    String result;
-                                    if (response.body() == null) {
-                                        result = "";
-                                    } else {
-                                        try {
-                                            result = response.body().string();
-                                        } catch (IOException e) {
-                                            result = "";
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    uploadCallback.onSuccess(response.code(), result);
+                                    uploadCallback.onSuccess(response.code(), finalResult);
                                 }
                             }
                         });
