@@ -33,6 +33,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.luck.picture.lib.PicturePreviewActivity.MAX_FILE_SIZE;
+import static com.luck.picture.lib.PicturePreviewActivity.MAX_FILE_SIZE_MB;
+
 /**
  * author：luck
  * project：PictureSelector
@@ -271,6 +274,13 @@ public class PictureImageGridAdapter extends RecyclerView.Adapter<RecyclerView.V
                 return;
             }
         }
+
+        long length = new File(image.getPath()).length();
+        if (length > MAX_FILE_SIZE) {
+            ToastManage.s(context, context.getString(R.string.picture_size_exceed, MAX_FILE_SIZE_MB));
+            return;
+        }
+
         if (selectImages.size() >= maxSelectNum && !isChecked) {
             boolean eqImg = pictureType.startsWith(PictureConfig.IMAGE);
             String str = eqImg ? context.getString(R.string.picture_message_max_num, maxSelectNum)

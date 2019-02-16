@@ -11,7 +11,6 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.luck.picture.lib.adapter.SimpleFragmentAdapter;
 import com.luck.picture.lib.anim.OptAnimationLoader;
 import com.luck.picture.lib.config.PictureConfig;
@@ -30,6 +29,7 @@ import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.UCropMulti;
 import com.yalantis.ucrop.model.CutInfo;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +43,11 @@ import java.util.List;
  */
 public class PicturePreviewActivity extends PictureBaseActivity implements
         View.OnClickListener, Animation.AnimationListener, SimpleFragmentAdapter.OnCallBackActivity {
+    /**
+     * 选择文件不能超过 20m
+     */
+    public static final int MAX_FILE_SIZE_MB = 20;
+    public static final int MAX_FILE_SIZE = 1024 * 1024 * MAX_FILE_SIZE_MB;
     private ImageView picture_left_back;
     private TextView tv_img_num, tv_title, tv_ok;
     private PreviewViewPager viewPager;
@@ -131,10 +136,17 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                         boolean toEqual = PictureMimeType.
                                 mimeToEqual(pictureType, image.getPictureType());
                         if (!toEqual) {
-                            ToastManage.s(mContext,getString(R.string.picture_rule));
+                            ToastManage.s(mContext, getString(R.string.picture_rule));
                             return;
                         }
                     }
+
+                    long length = new File(image.getPath()).length();
+                    if (length > MAX_FILE_SIZE) {
+                        ToastManage.s(mContext, getString(R.string.picture_size_exceed, MAX_FILE_SIZE_MB));
+                        return;
+                    }
+
                     // 刷新图片列表中图片状态
                     boolean isChecked;
                     if (!check.isSelected()) {
@@ -402,7 +414,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                     boolean eqImg = pictureType.startsWith(PictureConfig.IMAGE);
                     String str = eqImg ? getString(R.string.picture_min_img_num, config.minSelectNum)
                             : getString(R.string.picture_min_video_num, config.minSelectNum);
-                    ToastManage.s(mContext,str);
+                    ToastManage.s(mContext, str);
                     return;
                 }
             }
@@ -454,7 +466,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             }
         } else if (resultCode == UCrop.RESULT_ERROR) {
             Throwable throwable = (Throwable) data.getSerializableExtra(UCrop.EXTRA_ERROR);
-            ToastManage.s(mContext,throwable.getMessage());
+            ToastManage.s(mContext, throwable.getMessage());
         }
     }
 

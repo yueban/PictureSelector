@@ -21,6 +21,7 @@ import com.luck.picture.lib.permissions.RxPermissions;
 import com.luck.picture.lib.tools.JSObject;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ToastManage;
+import com.yueban.qiniu_lib.AsyncRun;
 import com.yueban.qiniu_lib.UploadCallback;
 import com.yueban.qiniu_lib.UploadUtil;
 import io.reactivex.Observer;
@@ -62,33 +63,38 @@ public class PictureSelectorUtil {
             @Override
             public void uploadMedia(final String type, String uploadUrl) {
                 mUploadUrl = uploadUrl;
-                if (mActivityRef.get() != null) {
-                    RxPermissions permissions = new RxPermissions(mActivityRef.get());
-                    permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                        }
-
-                        @Override
-                        public void onNext(Boolean aBoolean) {
-                            if (mActivityRef.get() != null) {
-                                if (aBoolean) {
-                                    gotoImageSelector(mActivityRef.get(), type);
-                                } else {
-                                    ToastManage.s(mActivityRef.get(), mActivityRef.get().getString(R.string.picture_jurisdiction));
+                AsyncRun.runInMain(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mActivityRef.get() != null) {
+                            RxPermissions permissions = new RxPermissions(mActivityRef.get());
+                            permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(new Observer<Boolean>() {
+                                @Override
+                                public void onSubscribe(Disposable d) {
                                 }
-                            }
-                        }
 
-                        @Override
-                        public void onError(Throwable e) {
-                        }
+                                @Override
+                                public void onNext(Boolean aBoolean) {
+                                    if (mActivityRef.get() != null) {
+                                        if (aBoolean) {
+                                            gotoImageSelector(mActivityRef.get(), type);
+                                        } else {
+                                            ToastManage.s(mActivityRef.get(), mActivityRef.get().getString(R.string.picture_jurisdiction));
+                                        }
+                                    }
+                                }
 
-                        @Override
-                        public void onComplete() {
+                                @Override
+                                public void onError(Throwable e) {
+                                }
+
+                                @Override
+                                public void onComplete() {
+                                }
+                            });
                         }
-                    });
-                }
+                    }
+                });
             }
         }), "upload");
     }
@@ -135,10 +141,10 @@ public class PictureSelectorUtil {
                         @Override
                         public void onFailed(Exception e) {
                             dismissLoadingDialog();
-                            if (e instanceof SocketTimeoutException) {
-                                sendToWebView(new JSONObject(), 408, "上传超时");
-                            } else {
+                            if (!(e instanceof SocketTimeoutException)) {
                                 sendToWebView(new JSONObject(), 400, "上传失败");
+                            } else {
+                                sendToWebView(new JSONObject(), 408, "上传超时");
                             }
                         }
 

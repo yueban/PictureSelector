@@ -1,6 +1,7 @@
 package com.yueban.qiniu_lib;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import okhttp3.*;
 
@@ -75,7 +76,11 @@ public class UploadUtil {
                             @Override
                             public void run() {
                                 if (uploadCallback != null) {
-                                    uploadCallback.onSuccess(response.code(), finalResult);
+                                    if (!TextUtils.isEmpty(finalResult)) {
+                                        uploadCallback.onSuccess(response.code(), finalResult);
+                                    } else {
+                                        uploadCallback.onFailed(null);
+                                    }
                                 }
                             }
                         });

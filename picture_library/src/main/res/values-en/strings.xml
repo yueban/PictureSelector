@@ -3,6 +3,7 @@
     <string name="picture_cancel">Cancel</string>
     <string name="picture_take_picture">Shot</string>
     <string name="picture_rule">not pictures or video</string>
+    <string name="picture_size_exceed" formatted="false">file size must be less than %dm</string>
     <string name="picture_min_video_num">Video Selection Cannot%1$sNumber</string>
     <string name="picture_message_max_num">You can choose the most%1$s Number Pictures</string>
     <string name="picture_preview">Preview</string>

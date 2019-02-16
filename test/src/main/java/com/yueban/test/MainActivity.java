@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
         };
         mWebView.setWebViewClient(WVClient);
         mWebView.setWebChromeClient(new WebChromeClient());
-        mWebView.loadUrl("file:///android_asset/js_test.html");
+//        mWebView.loadUrl("file:///android_asset/js_test.html");
+        mWebView.loadUrl("http://liao.unicornsocialmedia.cn?mobilenum=15736782788");
     }
 
     @Override
