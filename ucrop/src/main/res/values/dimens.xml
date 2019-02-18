@@ -14,6 +14,7 @@
     <dimen name="ucrop_size_wrapper_rotate_button">50dp</dimen>
     <dimen name="ucrop_height_crop_aspect_ratio_text">40dp</dimen>
     <dimen name="ucrop_progress_size">30dp</dimen>
+    <dimen name="ucrop_toolbar_size">56dp</dimen>
 
     <!--Crop View-->
     <dimen name="ucrop_default_crop_grid_stoke_width">1dp</dimen>
