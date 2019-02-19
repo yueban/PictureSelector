@@ -240,7 +240,7 @@ public class PictureSelectorUtil {
 //                .withAspectRatio(aspect_ratio_x, aspect_ratio_y)// 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                 .hideBottomControls(true)// 是否显示uCrop工具栏，默认不显示
                 .isGif(false)// 是否显示gif图片
-                .freeStyleCropEnabled(true)// 裁剪框是否可拖拽
+                .freeStyleCropEnabled(false)// 裁剪框是否可拖拽
                 .circleDimmedLayer(false)// 是否圆形裁剪
                 .showCropFrame(true)// 是否显示裁剪矩形边框 圆形裁剪时建议设为false
                 .showCropGrid(true)// 是否显示裁剪矩形网格 圆形裁剪时建议设为false
