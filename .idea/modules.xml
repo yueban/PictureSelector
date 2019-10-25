@@ -3,6 +3,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PictureSelector.iml" filepath="$PROJECT_DIR$/PictureSelector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/PictureSelector-app.iml" filepath="$PROJECT_DIR$/app/PictureSelector-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/picture_library/PictureSelector-picture_library.iml" filepath="$PROJECT_DIR$/picture_library/PictureSelector-picture_library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/qiniu_lib/PictureSelector-qiniu_lib.iml" filepath="$PROJECT_DIR$/qiniu_lib/PictureSelector-qiniu_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test/PictureSelector-test.iml" filepath="$PROJECT_DIR$/test/PictureSelector-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ucrop/PictureSelector-ucrop.iml" filepath="$PROJECT_DIR$/ucrop/PictureSelector-ucrop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-PictureSelector.iml" filepath="$PROJECT_DIR$/android-PictureSelector.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/picture_library/picture_library.iml" filepath="$PROJECT_DIR$/picture_library/picture_library.iml" />
       <module fileurl="file://$PROJECT_DIR$/qiniu_lib/qiniu_lib.iml" filepath="$PROJECT_DIR$/qiniu_lib/qiniu_lib.iml" />
